@@ -343,7 +343,7 @@ namespace ProWorks.Umbraco8.Migrations.Migrations
                 }
 
                 Data.Add(obj);
-                Layout.Refs.Add(new SimpleLayout.SimpleLayoutRef { Udi = udi });
+                Layout.Refs.Add(new SimpleLayout.SimpleLayoutRef { ContentUdi = udi });
             }
 
             public class SimpleLayout
@@ -353,8 +353,8 @@ namespace ProWorks.Umbraco8.Migrations.Migrations
 
                 public class SimpleLayoutRef
                 {
-                    [JsonProperty("udi")]
-                    public string Udi { get; set; }
+                    [JsonProperty("contentUdi")]
+                    public string ContentUdi { get; set; }
                 }
             }
         }
