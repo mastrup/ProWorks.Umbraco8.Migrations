@@ -160,10 +160,10 @@ namespace ProWorks.Umbraco8.Migrations.Migrations
             {
                 Blocks = old.ContentTypes?.Select(t => new BlockListConfiguration.BlockConfiguration
                 {
-                    ContentTypeKey = knownDocumentTypes.TryGetValue(t.IcContentTypeGuid, out var ct) && ct.Key != Guid.Empty ? ct.Key : t.IcContentTypeGuid,
+                    ContentElementTypeKey = knownDocumentTypes.TryGetValue(t.IcContentTypeGuid, out var ct) && ct.Key != Guid.Empty ? ct.Key : t.IcContentTypeGuid,
                     Label = t.NameTemplate,
                     EditorSize = "medium"
-                }).Where(c => c.ContentTypeKey != null).ToArray(),
+                }).Where(c => c.ContentElementTypeKey != null).ToArray(),
                 UseInlineEditingAsDefault = old.SingleItemMode == "1" || old.SingleItemMode == bool.TrueString
             };
 
@@ -232,10 +232,42 @@ namespace ProWorks.Umbraco8.Migrations.Migrations
 
         private class BlockListConfiguration
         {
-
             [JsonProperty("blocks")]
             public BlockConfiguration[] Blocks { get; set; }
 
+            public class BlockConfiguration
+            {
+
+                [JsonProperty("backgroundColor")]
+                public string BackgroundColor { get; set; }
+
+                [JsonProperty("iconColor")]
+                public string IconColor { get; set; }
+
+                [JsonProperty("thumbnail")]
+                public string Thumbnail { get; set; }
+
+                [JsonProperty("contentElementTypeKey")]
+                public Guid ContentElementTypeKey { get; set; }
+
+                [JsonProperty("settingsElementTypeKey")]
+                public Guid? SettingsElementTypeKey { get; set; }
+
+                [JsonProperty("view")]
+                public string View { get; set; }
+
+                [JsonProperty("stylesheet")]
+                public string Stylesheet { get; set; }
+
+                [JsonProperty("label")]
+                public string Label { get; set; }
+
+                [JsonProperty("editorSize")]
+                public string EditorSize { get; set; }
+
+                [JsonProperty("forceHideContentEditorInOverlay")]
+                public bool ForceHideContentEditorInOverlay { get; set; }
+            }
 
             [JsonProperty("validationLimit")]
             public NumberRange ValidationLimit { get; set; } = new NumberRange();
@@ -249,32 +281,8 @@ namespace ProWorks.Umbraco8.Migrations.Migrations
                 public int? Max { get; set; }
             }
 
-            public class BlockConfiguration
-            {
-                [JsonProperty("backgroundColor")]
-                public string BackgroundColor { get; set; }
-
-                [JsonProperty("iconColor")]
-                public string IconColor { get; set; }
-
-                [JsonProperty("thumbnail")]
-                public string Thumbnail { get; set; }
-
-                [JsonProperty("contentTypeKey")]
-                public Guid ContentTypeKey { get; set; }
-
-                [JsonProperty("settingsElementTypeKey")]
-                public string SettingsElementTypeKey { get; set; }
-
-                [JsonProperty("view")]
-                public string View { get; set; }
-
-                [JsonProperty("label")]
-                public string Label { get; set; }
-
-                [JsonProperty("editorSize")]
-                public string EditorSize { get; set; }
-            }
+            [JsonProperty("useLiveEditing")]
+            public bool UseLiveEditing { get; set; }
 
             [JsonProperty("useInlineEditingAsDefault")]
             public bool UseInlineEditingAsDefault { get; set; }
@@ -282,6 +290,7 @@ namespace ProWorks.Umbraco8.Migrations.Migrations
             [JsonProperty("maxPropertyWidth")]
             public string MaxPropertyWidth { get; set; }
         }
+
         private class StackedContentConfiguration
         {
 
