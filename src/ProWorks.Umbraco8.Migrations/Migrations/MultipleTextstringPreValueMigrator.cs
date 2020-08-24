@@ -6,7 +6,7 @@ using Umbraco.Core.Persistence;
 using ProWorks.Umbraco8.Dtos;
 using Umbraco.Core;
 
-namespace ProWorks.Umbraco8.Migrations
+namespace ProWorks.Umbraco8.Migrations.Migrations
 {
     /// <summary>
     /// Updates the pre-values on the Multiple Textstrings data type to

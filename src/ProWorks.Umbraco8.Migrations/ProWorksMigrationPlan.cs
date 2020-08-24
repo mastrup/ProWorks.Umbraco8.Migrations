@@ -1,4 +1,5 @@
-﻿using Umbraco.Core.Migrations;
+﻿using ProWorks.Umbraco8.Migrations.Migrations;
+using Umbraco.Core.Migrations;
 
 namespace ProWorks.Umbraco8.Migrations
 {

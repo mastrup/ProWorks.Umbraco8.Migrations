@@ -8,7 +8,7 @@ using Umbraco.Core.Migrations.PostMigrations;
 using Umbraco.Core.Persistence;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
-namespace ProWorks.Umbraco8.Migrations
+namespace ProWorks.Umbraco8.Migrations.Migrations
 {
     public class ConvertProWorksInline : MigrationBase
     {

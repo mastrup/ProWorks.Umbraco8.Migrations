@@ -5,7 +5,7 @@ using System.Linq;
 using Umbraco.Core;
 using Umbraco.Core.Migrations;
 
-namespace ProWorks.Umbraco8.Migrations
+namespace ProWorks.Umbraco8.Migrations.Migrations
 {
     public class NestedContentLinks : DataCorrectionMigration
     {

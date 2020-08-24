@@ -13,7 +13,7 @@ using Umbraco.Core.Persistence.DatabaseAnnotations;
 using Umbraco.Core.Persistence.DatabaseModelDefinitions;
 using Umbraco.Core.PropertyEditors;
 
-namespace ProWorks.Umbraco8.Migrations
+namespace ProWorks.Umbraco8.Migrations.Migrations
 {
     public class StackedContentToBlockListEditor : MigrationBase
     {

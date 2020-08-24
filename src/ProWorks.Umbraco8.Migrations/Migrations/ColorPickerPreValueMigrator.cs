@@ -10,7 +10,7 @@ using ProWorks.Umbraco8.Dtos;
 using Umbraco.Core.PropertyEditors;
 using Umbraco.Core;
 
-namespace ProWorks.Umbraco8.Migrations
+namespace ProWorks.Umbraco8.Migrations.Migrations
 {
     /// <summary>
     /// Updates the pre-values on the Color Picker data types to preserve

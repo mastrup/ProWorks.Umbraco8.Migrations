@@ -1,7 +1,7 @@
 ﻿using Umbraco.Core.Migrations;
 using Umbraco.Core.Migrations.PostMigrations;
 
-namespace ProWorks.Umbraco8.Migrations
+namespace ProWorks.Umbraco8.Migrations.Migrations
 {
     public class UpdatePublishedVersionToLatest : MigrationBase
     {

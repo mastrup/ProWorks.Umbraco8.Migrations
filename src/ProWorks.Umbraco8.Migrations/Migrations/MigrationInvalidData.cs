@@ -8,7 +8,7 @@ using Umbraco.Core.Migrations;
 using Umbraco.Core.PropertyEditors;
 using static Umbraco.Core.Constants.PropertyEditors;
 
-namespace ProWorks.Umbraco8.Migrations
+namespace ProWorks.Umbraco8.Migrations.Migrations
 {
     public class MigrationInvalidData : DataCorrectionMigration
     {

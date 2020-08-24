@@ -11,7 +11,7 @@ using Umbraco.Core.PropertyEditors;
 using static Umbraco.Core.Constants.PropertyEditors;
 using Umbraco.Core;
 
-namespace ProWorks.Umbraco8.Migrations
+namespace ProWorks.Umbraco8.Migrations.Migrations
 {
     /// <summary>
     /// Sets all content types used in a Nested Content data type, and any

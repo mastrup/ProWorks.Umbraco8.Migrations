@@ -8,7 +8,7 @@ using Umbraco.Core.Persistence;
 using ProWorks.Umbraco8.Dtos;
 using Umbraco.Core;
 
-namespace ProWorks.Umbraco8.Migrations
+namespace ProWorks.Umbraco8.Migrations.Migrations
 {
     /// <summary>
     /// Ensures that the filter string has the correct case for content types
