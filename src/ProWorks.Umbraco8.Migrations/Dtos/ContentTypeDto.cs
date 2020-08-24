@@ -7,7 +7,7 @@ namespace ProWorks.Umbraco8.Dtos
     [TableName(TableName)]
     [PrimaryKey("pk")]
     [ExplicitColumns]
-    internal class ContentTypeDto
+    public class ContentTypeDto
     {
         public const string TableName = Constants.DatabaseSchema.Tables.ContentType;
 

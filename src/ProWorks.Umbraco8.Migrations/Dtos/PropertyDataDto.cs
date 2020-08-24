@@ -8,7 +8,7 @@ namespace ProWorks.Umbraco8.Dtos
     [TableName(TableName)]
     [PrimaryKey("id")]
     [ExplicitColumns]
-    internal class PropertyDataDto
+    public class PropertyDataDto
     {
         public const string TableName = Constants.DatabaseSchema.Tables.PropertyData;
         public const int VarcharLength = 512;

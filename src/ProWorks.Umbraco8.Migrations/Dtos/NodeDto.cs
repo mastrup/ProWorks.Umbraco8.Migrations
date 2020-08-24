@@ -9,7 +9,7 @@ namespace ProWorks.Umbraco8.Dtos
     [TableName(TableName)]
     [PrimaryKey("id")]
     [ExplicitColumns]
-    internal class NodeDto
+    public class NodeDto
     {
         public const string TableName = Constants.DatabaseSchema.Tables.Node;
         public const int NodeIdSeed = 1060;

@@ -6,7 +6,7 @@ namespace ProWorks.Umbraco8.Dtos
 {
     [TableName(Constants.DatabaseSchema.Tables.ElementTypeTree)]
     [ExplicitColumns]
-    internal class ContentType2ContentTypeDto
+    public class ContentType2ContentTypeDto
     {
         [Column("parentContentTypeId")]
         [PrimaryKeyColumn(AutoIncrement = false, Clustered = true, Name = "PK_cmsContentType2ContentType", OnColumns = "parentContentTypeId, childContentTypeId")]

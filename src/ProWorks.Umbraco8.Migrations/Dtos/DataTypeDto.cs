@@ -7,7 +7,7 @@ namespace ProWorks.Umbraco8.Dtos
     [TableName(Constants.DatabaseSchema.Tables.DataType)]
     [PrimaryKey("nodeId", AutoIncrement = false)]
     [ExplicitColumns]
-    internal class DataTypeDto
+    public class DataTypeDto
     {
         [Column("nodeId")]
         [PrimaryKeyColumn(AutoIncrement = false)]

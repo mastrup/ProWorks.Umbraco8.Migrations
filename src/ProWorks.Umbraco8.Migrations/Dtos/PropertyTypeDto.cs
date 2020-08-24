@@ -9,7 +9,7 @@ namespace ProWorks.Umbraco8.Dtos
     [TableName(Constants.DatabaseSchema.Tables.PropertyType)]
     [PrimaryKey("id")]
     [ExplicitColumns]
-    internal class PropertyTypeDto
+    public class PropertyTypeDto
     {
         [Column("id")]
         [PrimaryKeyColumn(IdentitySeed = 50)]
