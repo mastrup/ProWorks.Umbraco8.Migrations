@@ -313,8 +313,8 @@ namespace ProWorks.Umbraco8.Migrations.Migrations
         {
             [JsonProperty("layout")]
             public SimpleLayout Layout { get; } = new SimpleLayout();
-            [JsonProperty("data")]
-            public List<JObject> Data { get; } = new List<JObject>();
+            [JsonProperty("contentData")]
+            public List<JObject> ContentData { get; } = new List<JObject>();
 
             public void AddDataItem(JObject obj, Dictionary<Guid, KnownContentType> knownDocumentTypes)
             {
@@ -342,7 +342,7 @@ namespace ProWorks.Umbraco8.Migrations.Migrations
                     }
                 }
 
-                Data.Add(obj);
+                ContentData.Add(obj);
                 Layout.Refs.Add(new SimpleLayout.SimpleLayoutRef { ContentUdi = udi });
             }
 
