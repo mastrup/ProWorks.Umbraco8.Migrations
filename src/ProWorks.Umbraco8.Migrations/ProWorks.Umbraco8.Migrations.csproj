@@ -61,6 +61,10 @@
     <Compile Include="Dtos\NodeDto.cs" />
     <Compile Include="Dtos\PropertyDataDto.cs" />
     <Compile Include="Dtos\PropertyTypeDto.cs" />
+    <Compile Include="IPreUpgradeComposer.cs" />
+    <Compile Include="IPreUpgradeStep.cs" />
+    <Compile Include="Migrations\FixAlphaVersion.cs" />
+    <Compile Include="Migrations\HandleMediaServiceMigration.cs" />
     <Compile Include="ProWorksMigrationComponent.cs" />
     <Compile Include="ProWorksMigrationComposer.cs" />
     <Compile Include="Migrations\BlockListLink.cs" />
@@ -79,6 +83,8 @@
     <Compile Include="Migrations\UpdatePublishedVersionToLatest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProWorksMigrationPlan.cs" />
+    <Compile Include="ProWorksPreUpgradeComponent.cs" />
+    <Compile Include="ProWorksPreUpgradeComposer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
