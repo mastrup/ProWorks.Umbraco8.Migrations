@@ -4,7 +4,7 @@ using Umbraco.Core;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 using Umbraco.Core.Persistence.DatabaseModelDefinitions;
 
-namespace ProWorks.Umbraco8.Dtos
+namespace ProWorks.Umbraco8.Migrations.Dtos
 {
     [TableName(Constants.DatabaseSchema.Tables.PropertyType)]
     [PrimaryKey("id")]

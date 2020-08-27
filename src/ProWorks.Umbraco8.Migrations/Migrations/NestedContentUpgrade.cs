@@ -6,7 +6,7 @@ using System.Linq;
 using Umbraco.Core.Migrations;
 using Umbraco.Core.Migrations.PostMigrations;
 using Umbraco.Core.Persistence;
-using ProWorks.Umbraco8.Dtos;
+using ProWorks.Umbraco8.Migrations.Dtos;
 using Umbraco.Core.PropertyEditors;
 using static Umbraco.Core.Constants.PropertyEditors;
 using Umbraco.Core;

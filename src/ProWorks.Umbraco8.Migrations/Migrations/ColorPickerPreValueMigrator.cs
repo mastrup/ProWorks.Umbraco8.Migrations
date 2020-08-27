@@ -1,12 +1,11 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Umbraco.Core.Migrations;
 using Umbraco.Core.Migrations.PostMigrations;
 using Umbraco.Core.Persistence;
-using ProWorks.Umbraco8.Dtos;
+using ProWorks.Umbraco8.Migrations.Dtos;
 using Umbraco.Core.PropertyEditors;
 using Umbraco.Core;
 

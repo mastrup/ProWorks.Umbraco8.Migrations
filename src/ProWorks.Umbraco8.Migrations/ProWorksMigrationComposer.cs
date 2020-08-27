@@ -14,7 +14,7 @@ namespace ProWorks.Umbraco8.Migrations
 
             foreach (var type in types)
             {
-                if (type.FullName != "uSync8.BackOffice.uSyncBackOfficeComposer") continue;
+                if (type.FullName != "uSync8.BackOffice.uSyncBackofficeComponent") continue;
 
                 components.InsertBefore(type, typeof(ProWorksMigrationComponent));
                 inserted = true;

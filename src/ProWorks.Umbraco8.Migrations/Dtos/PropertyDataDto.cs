@@ -3,7 +3,7 @@ using NPoco;
 using Umbraco.Core;
 using Umbraco.Core.Persistence.DatabaseAnnotations;
 
-namespace ProWorks.Umbraco8.Dtos
+namespace ProWorks.Umbraco8.Migrations.Dtos
 {
     [TableName(TableName)]
     [PrimaryKey("id")]
