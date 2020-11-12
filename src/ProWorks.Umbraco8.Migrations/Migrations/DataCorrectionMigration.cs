@@ -149,7 +149,7 @@ namespace ProWorks.Umbraco8.Migrations.Migrations
             [SpecialDbType(SpecialDbTypes.NTEXT)]
             public string TextValue { get; set; }
 
-            public DataValues ToDataValues() => new DataValues { DateValue = DateValue, DecimalValue = DecimalValue, IntegerValue = IntegerValue, LanguageId = LanguageId, Segment = Segment, TextValue = TextValue, VarcharValue = VarcharValue };
+            public DataValues ToDataValues() => new DataValues { DateValue = DateValue, DecimalValue = DecimalValue, IntegerValue = IntegerValue, LanguageId = LanguageId, Segment = Segment, TextValue = TextValue, VarcharValue = VarcharValue, Id = Id, VersionId = VersionId };
 
             public void FromDataValues(DataValues values)
             {
@@ -200,6 +200,8 @@ namespace ProWorks.Umbraco8.Migrations.Migrations
             public DateTime? DateValue { get; set; }
             public string VarcharValue { get; set; }
             public string TextValue { get; set; }
+            public int VersionId { get; set; }
+            public int Id { get; set; }
         }
     }
 }
