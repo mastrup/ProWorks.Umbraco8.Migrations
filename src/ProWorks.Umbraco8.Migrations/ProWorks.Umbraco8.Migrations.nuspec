@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>ProWorks.Umbraco8.Migrations</id>
+    <version>$version$</version>
+    <title>ProWorks.Umbraco8.Migrations</title>
+    <authors>ProWorks</authors>
+    <owners>ProWorks</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <projectUrl>https://bitbucket.org/proworks/proworks.umbraco8.migrations/</projectUrl>
+	<repository type="git" url="https://bitbucket.org/proworks/proworks.umbraco8.migrations.git" branch="master" />
+    <description>Migrations for upgrading from Umbraco v7 to Umbraco 8.7+.</description>
+    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
+    <copyright>Copyright 2021</copyright>
+  </metadata>
+</package>
