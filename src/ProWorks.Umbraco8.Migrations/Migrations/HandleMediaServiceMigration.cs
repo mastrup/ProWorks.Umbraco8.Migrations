@@ -144,6 +144,7 @@ namespace ProWorks.Umbraco8.Migrations.Migrations
             public Attempt<OperationResult> Save(IEnumerable<IMedia> medias, int userId = -1, bool raiseEvents = true) => _realMediaService.Save(medias, userId, raiseEvents);
             public void SetMediaFileContent(string filepath, Stream content) => _realMediaService.SetMediaFileContent(filepath, content);
             public bool Sort(IEnumerable<IMedia> items, int userId = -1, bool raiseEvents = true) => _realMediaService.Sort(items, userId, raiseEvents);
+            public bool RecycleBinSmells() => _realMediaService.RecycleBinSmells();
 
             private class DbMediaEntry
             {
