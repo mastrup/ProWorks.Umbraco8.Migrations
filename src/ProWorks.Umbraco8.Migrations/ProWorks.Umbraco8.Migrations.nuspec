@@ -13,5 +13,13 @@
     <description>Migrations for upgrading from Umbraco v7 to Umbraco 8.7+.</description>
     <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
     <copyright>Copyright 2021</copyright>
+    <tags>umbraco migration</tags>
+    <dependencies>
+      <dependency id="UmbracoCms.Core" version="8.14.0" />
+    </dependencies>
   </metadata>
+  <files>
+    <file src="bin\Debug\ProWorks.Umbraco8.Migrations.dll" target="lib\net45\ProWorks.Umbraco8.Migrations.dll" />
+    <file src="bin\Debug\ProWorks.Umbraco8.Migrations.pdb" target="lib\net45\ProWorks.Umbraco8.Migrations.pdb" />
+  </files>
 </package>
