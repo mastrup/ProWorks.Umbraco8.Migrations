@@ -102,34 +102,76 @@ namespace ProWorks.Umbraco8.Migrations.Migrations
                 .InnerJoin<NodeDto>()
                 .On<ContentTypeDto, NodeDto>(c => c.NodeId, n => n.NodeId);
 
-            var types = Database.Fetch<ContentTypeDto>(sql);
-            var typeMap = new Dictionary<int, ContentTypeDto>(types.Count);
-            types.ForEach(t => typeMap[t.NodeId] = t);
+            var contentTypes = Database.Fetch<ContentTypeDto>(sql);
+            var contentTypeMap = new Dictionary<int, ContentTypeDto>(contentTypes.Count);
+            contentTypes.ForEach(contentType => contentTypeMap[contentType.NodeId] = contentType);
 
             sql = Sql()
                 .Select<ContentType2ContentTypeDto>()
                 .From<ContentType2ContentTypeDto>();
-            var joins = Database.Fetch<ContentType2ContentTypeDto>(sql);
+            
+            var contentTypeJoins = Database.Fetch<ContentType2ContentTypeDto>(sql);
+          
             // Find all relationships between types, either inherited or composited
-            var joinLk = joins
-                .Union(types
-                    .Where(t => typeMap.ContainsKey(t.NodeDto.ParentId))
+            var contentTypeJoinsLookup = contentTypeJoins
+                .Union(contentTypes
+                    .Where(t => contentTypeMap.ContainsKey(t.NodeDto.ParentId))
                     .Select(t => new ContentType2ContentTypeDto { ChildId = t.NodeId, ParentId = t.NodeDto.ParentId }))
                 .ToLookup(j => j.ChildId, j => j.ParentId);
+            
+            sql = Sql()
+                .Select<PropertyTypeDto>(r => r.Select(x => x.DataTypeDto))
+                .From<PropertyTypeDto>()
+                .InnerJoin<DataTypeDto>()
+                .On<PropertyTypeDto, DataTypeDto>(c => c.DataTypeId, n => n.NodeId)
+                .WhereIn<DataTypeDto>(d => d.EditorAlias, new[] { Constants.PropertyEditors.Aliases.NestedContent });
+            var nestedContentProperties = Database.Fetch<PropertyTypeDto>(sql);
+            // Get all nested content and color picker property aliases by content type ID
+            var nestedContentPropertiesLookup = nestedContentProperties.ToLookup(p => p.ContentTypeId, p => p.Alias);
+            
+            sql = Sql()
+                .Select<PropertyTypeDto>(r => r.Select(x => x.DataTypeDto))
+                .From<PropertyTypeDto>()
+                .InnerJoin<DataTypeDto>()
+                .On<PropertyTypeDto, DataTypeDto>(c => c.DataTypeId, n => n.NodeId)
+                .WhereIn<DataTypeDto>(d => d.EditorAlias, new[] { Constants.PropertyEditors.Aliases.ColorPicker });
+            var stringToRawProperties = Database.Fetch<PropertyTypeDto>(sql);
+            // Get all nested content and color picker property aliases by content type ID
+            var stringToRawPropertiesLookup = stringToRawProperties.ToLookup(p => p.ContentTypeId, p => p.Alias);
 
             sql = Sql()
                 .Select<PropertyTypeDto>(r => r.Select(x => x.DataTypeDto))
                 .From<PropertyTypeDto>()
                 .InnerJoin<DataTypeDto>()
                 .On<PropertyTypeDto, DataTypeDto>(c => c.DataTypeId, n => n.NodeId)
-                .WhereIn<DataTypeDto>(d => d.EditorAlias, new[] { Constants.PropertyEditors.Aliases.NestedContent, Constants.PropertyEditors.Aliases.ColorPicker });
-            var props = Database.Fetch<PropertyTypeDto>(sql);
-            // Get all nested content and color picker property aliases by content type ID
-            var propLk = props.ToLookup(p => p.ContentTypeId, p => p.Alias);
-
-            var knownMap = new Dictionary<Guid, KnownContentType>(types.Count);
-            types.ForEach(t => knownMap[t.NodeDto.UniqueId] = new KnownContentType(t.Alias, t.NodeDto.UniqueId, propLk[t.NodeId].Union(joinLk[t.NodeId].SelectMany(r => propLk[r])).ToArray()));
-            return knownMap;
+                .WhereIn<DataTypeDto>(d => d.EditorAlias, new[] { Constants.PropertyEditors.Aliases.DropDownListFlexible, Constants.PropertyEditors.Aliases.CheckBoxList });
+            var stringToJsonProperties = Database.Fetch<PropertyTypeDto>(sql);
+            // Get all dropdownlist and checkboxlist property aliases by content type ID
+            var stringToJsonPropertiesLookup = stringToJsonProperties.ToLookup(p => p.ContentTypeId, p => p.Alias);
+     
+            var knownContentTypesMap = new Dictionary<Guid, KnownContentType>(contentTypes.Count);
+            
+            contentTypes.ForEach(contentType =>
+            {
+                var stringToRawPropertyAliases = stringToRawPropertiesLookup[contentType.NodeId]
+                    .Union(contentTypeJoinsLookup[contentType.NodeId]
+                        .SelectMany(r => stringToRawPropertiesLookup[r]))
+                    .ToArray();
+                
+                var stringToJsonPropertyAliases = stringToJsonPropertiesLookup[contentType.NodeId]
+                    .Union(contentTypeJoinsLookup[contentType.NodeId]
+                        .SelectMany(r => stringToJsonPropertiesLookup[r]))
+                    .ToArray();
+                
+                var nestedContentPropertyAliases = nestedContentPropertiesLookup[contentType.NodeId]
+                    .Union(contentTypeJoinsLookup[contentType.NodeId]
+                        .SelectMany(r => nestedContentPropertiesLookup[r]))
+                    .ToArray();
+                
+                knownContentTypesMap[contentType.NodeDto.UniqueId] =
+                        new KnownContentType(contentType.Alias, contentType.NodeDto.UniqueId, stringToRawPropertyAliases, stringToJsonPropertyAliases, nestedContentPropertyAliases);
+            });
+            return knownContentTypesMap;
         }
 
         private bool Migrate(IEnumerable<DataTypeDto> dataTypesToMigrate, Dictionary<Guid, KnownContentType> knownDocumentTypes)
@@ -163,13 +205,14 @@ namespace ProWorks.Umbraco8.Migrations.Migrations
                     ContentElementTypeKey = knownDocumentTypes.TryGetValue(t.IcContentTypeGuid, out var ct) && ct.Key != Guid.Empty ? ct.Key : t.IcContentTypeGuid,
                     Label = t.NameTemplate,
                     EditorSize = "medium"
-                }).Where(c => c.ContentElementTypeKey != null).ToArray(),
+                })
+                    .ToArray(),
                 UseInlineEditingAsDefault = old.SingleItemMode == "1" || old.SingleItemMode == bool.TrueString
             };
 
             if (int.TryParse(old.MaxItems, out var max) && max > 0)
             {
-                config.ValidationLimit = new BlockListConfiguration.NumberRange { Max = max };
+                config.ValidationLimit = new BlockListConfiguration.NumberRange { Max = max};
             }
 
             dataType.Configuration = ConfigurationEditor.ToDatabase(config);
@@ -202,7 +245,7 @@ namespace ProWorks.Umbraco8.Migrations.Migrations
             if (dto != null && !dto.TextValue.IsNullOrWhiteSpace() && dto.TextValue[0] == '[')
             {
                 var scObjs = JsonConvert.DeserializeObject<JObject[]>(dto.TextValue);
-                foreach (var obj in scObjs) model.AddDataItem(obj, knownDocumentTypes);
+                foreach (var obj in scObjs) model.AddDataItemFromStackedContent(obj, knownDocumentTypes);
             }
 
             dto.TextValue = JsonConvert.SerializeObject(model);
@@ -316,35 +359,186 @@ namespace ProWorks.Umbraco8.Migrations.Migrations
             [JsonProperty("contentData")]
             public List<JObject> ContentData { get; } = new List<JObject>();
 
-            public void AddDataItem(JObject obj, Dictionary<Guid, KnownContentType> knownDocumentTypes)
+            public void AddDataItemFromStackedContent(JObject obj, Dictionary<Guid, KnownContentType> knownDocumentTypes)
             {
                 if (!Guid.TryParse(obj["key"].ToString(), out var key)) key = Guid.NewGuid();
-                if (!Guid.TryParse(obj["icContentTypeGuid"].ToString(), out var ctGuid)) ctGuid = Guid.Empty;
-                if (!knownDocumentTypes.TryGetValue(ctGuid, out var ct)) ct = new KnownContentType(null, ctGuid, null);
+                if (!Guid.TryParse(obj["icContentTypeGuid"].ToString(), out var contentTypeGuid)) contentTypeGuid = Guid.Empty;
+                if (!knownDocumentTypes.TryGetValue(contentTypeGuid, out var contentType)) contentType = new KnownContentType(null, contentTypeGuid, null, null, null);
 
                 obj.Remove("key");
                 obj.Remove("icContentTypeGuid");
 
                 var udi = new GuidUdi(Constants.UdiEntityType.Element, key).ToString();
                 obj["udi"] = udi;
-                obj["contentTypeKey"] = ct.Key;
+                obj["contentTypeKey"] = contentType.Key;
 
-                if (ct.StringToRawProperties != null && ct.StringToRawProperties.Length > 0)
+                if (contentType.StringToRawProperties != null && contentType.StringToRawProperties.Length > 0)
                 {
                     // Nested content inside a stacked content item used to be stored as a deserialized string of the JSON array
                     // Now we store the content as the raw JSON array, so we need to convert from the string form to the array
-                    foreach (var prop in ct.StringToRawProperties)
+                    foreach (var property in contentType.StringToRawProperties)
                     {
-                        var val = obj[prop];
-                        var value = val?.ToString();
-                        if (val != null && val.Type == JTokenType.String && !value.IsNullOrWhiteSpace())
-                            obj[prop] = JsonConvert.DeserializeObject<JToken>(value);
+                        var jToken = obj[property];
+                        var value = jToken?.ToString();
+                        if (jToken != null && jToken.Type == JTokenType.String && !value.IsNullOrWhiteSpace())
+                        {
+                            obj[property] = JsonConvert.DeserializeObject<JToken>(value);
+                        }
+                    }
+                }
+                
+                if (contentType.StringToJsonProperties != null && contentType.StringToJsonProperties.Length > 0)
+                {
+                    // Dropdownlist and checkboxlist inside a stacked content item used to be stored as a string
+                    // Now we store the string as the raw JSON array, so we need to convert from the string form to the array
+                    foreach (var property in contentType.StringToJsonProperties)
+                    {
+                        var jToken = obj[property];
+                        var propertyValue = jToken?.ToString();
+
+                        if (jToken == null ||
+                            (jToken.Type != JTokenType.Integer &&
+                             jToken.Type != JTokenType.String) ||
+                            propertyValue.IsNullOrWhiteSpace() ||
+                            propertyValue[0] == '[')
+                        {
+                            continue;
+                        }
+                        
+                        var items = propertyValue
+                            .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries)
+                            .ToList();
+
+                        var newValue = new JArray(items);
+
+                        obj[property] = newValue;
+                    }
+                }
+                
+                if (contentType.NestedContentPropertyAliases != null && contentType.NestedContentPropertyAliases.Length > 0)
+                {
+                    foreach (var property in contentType.NestedContentPropertyAliases)
+                    {
+                        var jToken = obj[property];
+                        var value = jToken?.ToString();
+                        if (jToken != null && jToken.Type == JTokenType.String && !value.IsNullOrWhiteSpace())
+                        {
+                            var subModel = new SimpleModel();
+                            
+                            var scObjs = JsonConvert.DeserializeObject<JObject[]>(value);
+                            foreach (var subObj in scObjs)
+                            {
+                                var newValue = JsonConvert.SerializeObject(subModel);
+                                var newValueEscaped = Unescape(newValue);
+                                subObj[property] = newValueEscaped;
+                                subModel.AddDataItemFromNestedContent(subObj, knownDocumentTypes);
+                            }
+                        }
+                    }
+                }
+
+
+                ContentData.Add(obj);
+                Layout.Refs.Add(new SimpleLayout.SimpleLayoutRef { ContentUdi = udi });
+            }
+            
+                  public void AddDataItemFromNestedContent(JObject obj, Dictionary<Guid, KnownContentType> knownDocumentTypes)
+            {
+                var alias = obj["ncContentTypeAlias"].ToString();
+                var contentType = knownDocumentTypes.Values.FirstOrDefault(x => x.Alias == alias);
+                if (contentType is null)
+                {
+                    return;
+                }
+                
+                if (!Guid.TryParse(obj["key"].ToString(), out var key)) key = Guid.NewGuid();
+
+                obj.Remove("key");
+                obj.Remove("ncContentTypeAlias");
+
+                var udi = new GuidUdi(Constants.UdiEntityType.Element, key).ToString();
+                obj["udi"] = udi;
+                obj["contentTypeKey"] = contentType.Key;
+                
+                if (contentType.StringToRawProperties != null && contentType.StringToRawProperties.Length > 0)
+                {
+                    // Nested content inside a stacked content item used to be stored as a deserialized string of the JSON array
+                    // Now we store the content as the raw JSON array, so we need to convert from the string form to the array
+                    foreach (var property in contentType.StringToRawProperties)
+                    {
+                        var jToken = obj[property];
+                        var value = jToken?.ToString();
+                        if (jToken != null && jToken.Type == JTokenType.String && !value.IsNullOrWhiteSpace())
+                        {
+                            obj[property] = JsonConvert.DeserializeObject<JToken>(value);
+                        }
+                    }
+                }
+                
+                if (contentType.StringToJsonProperties != null && contentType.StringToJsonProperties.Length > 0)
+                {
+                    // Dropdownlist and checkboxlist inside a stacked content item used to be stored as a string
+                    // Now we store the string as the raw JSON array, so we need to convert from the string form to the array
+                    foreach (var property in contentType.StringToJsonProperties)
+                    {
+                        var jToken = obj[property];
+                        var propertyValue = jToken?.ToString();
+
+                        if (jToken == null ||
+                            (jToken.Type != JTokenType.Integer &&
+                             jToken.Type != JTokenType.String) ||
+                            propertyValue.IsNullOrWhiteSpace() ||
+                            propertyValue[0] == '[')
+                        {
+                            continue;
+                        }
+                        
+                        var items = propertyValue
+                            .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries)
+                            .ToList();
+
+                        var newValue = new JArray(items);
+
+                        obj[property] = newValue;
+                    }
+                }
+                
+                if (contentType.NestedContentPropertyAliases != null && contentType.NestedContentPropertyAliases.Length > 0)
+                {
+                    foreach (var property in contentType.NestedContentPropertyAliases)
+                    {
+                        var jToken = obj[property];
+                        
+                        if (jToken == null || jToken.Type != JTokenType.String) 
+                            continue;
+
+                        var jTokenValue = jToken.ToString();
+
+                        var nestedContentObjects = JsonConvert.DeserializeObject<IEnumerable<JObject>>(jTokenValue);
+                        
+                        foreach (var nestedContentObject in nestedContentObjects)
+                        {
+                            var subModel = new SimpleModel();
+                            subModel.AddDataItemFromNestedContent(nestedContentObject, knownDocumentTypes);
+                            var subModelValue = JsonConvert.SerializeObject(subModel);
+
+                            nestedContentObject[property] = subModelValue;
+                        }
+
+                        var value = JsonConvert.SerializeObject(nestedContentObjects);
+
+                        obj[property] = value;
                     }
                 }
 
                 ContentData.Add(obj);
                 Layout.Refs.Add(new SimpleLayout.SimpleLayoutRef { ContentUdi = udi });
             }
+                  
+                  public static string Unescape(string value)
+                  {
+                      return value.Replace(@"\\", string.Empty);
+                  }
 
             public class SimpleLayout
             {
@@ -361,16 +555,21 @@ namespace ProWorks.Umbraco8.Migrations.Migrations
 
         private class KnownContentType
         {
-            public KnownContentType(string alias, Guid key, string[] stringToRawProperties)
+            public KnownContentType(string alias, Guid key, string[] stringToRawProperties,
+                string[] stringToJsonProperties, string[] nestedContentPropertyAliases)
             {
-                Alias = alias ?? throw new ArgumentNullException(nameof(alias));
+                Alias = alias;
                 Key = key;
-                StringToRawProperties = stringToRawProperties ?? throw new ArgumentNullException(nameof(stringToRawProperties));
+                StringToRawProperties = stringToRawProperties;
+                StringToJsonProperties = stringToJsonProperties;
+                NestedContentPropertyAliases = nestedContentPropertyAliases;
             }
 
             public string Alias { get; }
             public Guid Key { get; }
             public string[] StringToRawProperties { get; }
+            public string[] StringToJsonProperties { get; }
+            public string[] NestedContentPropertyAliases { get; }
         }
 
         [TableName(Constants.DatabaseSchema.Tables.DataType)]
