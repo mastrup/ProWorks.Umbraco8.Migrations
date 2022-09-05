@@ -14,7 +14,7 @@ namespace ProWorks.Umbraco8.Migrations
         {
             From(string.Empty);
 
-            To<NestedContentUpgrade>();
+            To<NestedContentToBlockListEditor>();
             To<ColorPickerPreValueMigrator>();
             To<MultiNodeTreePickerPreValueMigrator>();
             To<SliderPreValueMigrator>();

@@ -65,6 +65,7 @@
     <Compile Include="IPreUpgradeStep.cs" />
     <Compile Include="Migrations\FixAlphaVersion.cs" />
     <Compile Include="Migrations\HandleMediaServiceMigration.cs" />
+    <Compile Include="Migrations\NestedContentToBlockListEditor.cs" />
     <Compile Include="ProWorksMigrationComponent.cs" />
     <Compile Include="ProWorksMigrationComposer.cs" />
     <Compile Include="Migrations\BlockListLink.cs" />
@@ -76,7 +77,6 @@
     <Compile Include="Migrations\MultiNodeTreePickerPreValueMigrator.cs" />
     <Compile Include="Migrations\MultipleTextstringPreValueMigrator.cs" />
     <Compile Include="Migrations\NestedContentLinks.cs" />
-    <Compile Include="Migrations\NestedContentUpgrade.cs" />
     <Compile Include="Migrations\RemoveRelatedNodes.cs" />
     <Compile Include="Migrations\SliderPreValueMigrator.cs" />
     <Compile Include="Migrations\StackedContentToBlockListEditor.cs" />
